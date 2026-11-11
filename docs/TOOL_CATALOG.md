@@ -1,6 +1,6 @@
 # MCP Tool catalog
 
-Eight source-aware tools **plus two guided MCP prompts** in public **v0.1.0**. Tool names are exact. They are exposed by a correctly connected MCP client, not automatically by GitHub, Railway, a skill file or this README.
+Eight source-aware tools **plus two guided MCP prompts** in public **v0.2.0**. Tool names are exact. They are exposed by a correctly connected MCP client, not automatically by GitHub, Railway, a skill file or this README.
 
 ## Source and authorization tools
 
@@ -101,3 +101,18 @@ These prompts are discoverable where the MCP client supports prompts. They do no
 | --- | --- |
 | `manuscript_handoff_checklist` | Verify complete final source, figure mapping, explicit per-article consent and evidence-based status |
 | `publication_reconciliation_checklist` | Inspect uncertain external outcomes without repeating an ambiguous upload |
+
+
+## Document poster export
+
+### generate_document_poster
+
+Create a PDF and page PNGs from an **existing Markdown file in the configured GitHub repository**, without rewriting its contents.
+
+Inputs: source_path (repository-relative .md file), optional output_dir, dpi (90 to 180, default 140), font (installed font family).
+
+Outputs: document.pdf, page-001.png, page-002.png, and poster-long.png when size permits. All files and a manifest are saved in one GitHub folder; changing an existing output is rejected.
+
+Install the poster extra, Pandoc, XeLaTeX and a CJK font. Choose the optional Dockerfile.poster image for a hosted installation. No Feishu upload is triggered.
+
+See [Document posters](POSTERS.md).
