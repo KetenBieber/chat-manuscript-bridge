@@ -11,6 +11,7 @@ import hashlib
 import json
 import os
 import re
+import secrets
 from urllib import error, request
 from urllib.parse import urlsplit
 
@@ -126,7 +127,8 @@ def notify_publication(service: ManuscriptService, article_id: str, *,
     attempt = {"schema_version": 1, "article_id": article_id,
                "source_sha256": source_sha, "document_url": url,
                "recipient_type": kind, "recipient_fingerprint": fingerprint,
-               "state": "claimed", "claimed_at_utc": now_utc()}
+               "state": "claimed", "claimed_at_utc": now_utc(),
+               "claim_nonce": secrets.token_hex(16)}
     # Never silently overwrite a previous attempt; even an HTTP timeout may
     # mean Feishu actually delivered the message.
     if service.record("notification-attempts", article_id) is not None:
