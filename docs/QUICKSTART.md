@@ -1,6 +1,6 @@
 # Quickstart / 快速入门
 
-Get a locally running, source-faithful MCP handoff server. This guide exercises the **public v0.1 interface** only; it does not publish a Feishu document.
+Get a locally running, source-faithful MCP handoff server. This guide exercises the **public v0.2 core interface** only; it does not publish a Feishu document.
 
 ## 1. Prerequisites
 
@@ -122,3 +122,8 @@ The endpoint is `/mcp`. Set your GitHub and destination variables as above. Keep
 | Job stays `approved_for_delivery` | Expected for public v0.1: no delivery worker is bundled |
 
 For security implications and safe disclosure see [SECURITY.md](../SECURITY.md).
+
+
+## Optional: Markdown to PDF/PNG posters
+
+Install the poster extra and Pandoc + XeLaTeX, then call generate_document_poster on an existing .md path in your GitHub repository. This is separate from the external publication worker. The included Dockerfile.poster supplies the required PDF toolchain. See [Document posters](POSTERS.md).
