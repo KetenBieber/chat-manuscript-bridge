@@ -21,7 +21,8 @@ Explicit allowlisted approvals/<id>.json
 Await an external delivery worker (NOT yet in this public package)
                    |
                    v
-Worker-only attempts/receipts/layout/notifications records
+Worker-only document attempts/receipts/layout records;
+             optional MCP Feishu IM send claim + real message-ID receipt
                    |
                    v
 MCP get_publication_status / reconcile_publication
@@ -49,7 +50,7 @@ The public source repository never stores private manuscripts or real Feishu rec
 - layout/<id>.json: actual same-document online structure audit
 - notifications/<id>.json: actual message-id receipt
 
-Only an external worker with real remote evidence may create the last four records. The current public MCP frontend does not create them.
+Only a genuine external publishing worker may create document upload attempts, publication receipts and layout audits. The optional MCP Feishu IM adapter can create a notification claim and message-ID receipt **after** the external evidence passes its source-bound checks. It does not import Feishu documents.
 
 ## Migration from the existing private project
 
