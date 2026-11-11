@@ -16,7 +16,7 @@
 
 - **Document import is not shipped here.** Publishing to Feishu or another platform needs a separately connected destination worker.
 - **Feishu IM notification is included only after verified documents.** It is not a general-purpose message tool and it does not re-author the manuscript.
-- **GitHub Action status is not accepted as proof of a passed test suite while hosted runners fail to execute.** Run `python -m pytest -q` and `python -m compileall -q src` locally until CI is restored.
+- **GitHub Actions is intentionally not used.** Validate with `python -m compileall -q src` and `python -m pytest -q` locally, and record the real result before marking a release as tested. There is no GitHub Actions/green-CI prerequisite.
 - OAuth 2.1 / shared multi-tenant hosting is not bundled.
 - There is no claim that this public core alone can reproduce the author's private end-to-end Feishu production pipeline.
 
