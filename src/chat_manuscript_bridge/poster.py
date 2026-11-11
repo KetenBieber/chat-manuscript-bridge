@@ -197,7 +197,7 @@ def _render(markdown_bytes: bytes, source_path: str, store: Storage,
             diagnosis = "unclassified"
             if re.search(r"(?i)fontspec error|font .* cannot be found|font .* not found", output):
                 diagnosis = "missing_font"
-            elif re.search(r"(?i)LaTeX Error: File [^\\n]+ not found", output):
+            elif re.search(r"(?i)LaTeX Error: File [^\n]+ not found", output):
                 diagnosis = "missing_latex_package"
             elif re.search(r"(?i)unable to load picture|cannot find image|no such file or directory", output):
                 diagnosis = "missing_figure"
@@ -211,9 +211,9 @@ def _render(markdown_bytes: bytes, source_path: str, store: Storage,
                 diagnosis = "pdf_engine_error"
             # A bounded LaTeX-error header is safer and far more actionable
             # than complete Pandoc stderr (which can echo manuscript prose).
-            header = re.search(r"(?m)^! ([^\\n]{1,140})", output)
+            header = re.search(r"(?m)^! ([^\n]{1,140})", output)
             if header:
-                candidate = re.sub(r"[^A-Za-z0-9 .,:()!_+\\-]", "", header.group(1))
+                candidate = re.sub(r"[^A-Za-z0-9 .,:()!_+-]", "", header.group(1))
                 diagnosis += " (" + candidate[:95] + ")"
             raise BridgeError("Poster PDF compilation failed: " + diagnosis)
         pdf_bytes = pdf_path.read_bytes()
