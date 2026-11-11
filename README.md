@@ -4,7 +4,7 @@
 
 An open-source [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server for preserving completed Markdown manuscripts, safely handing them to publishing workers, exporting PDF/image posters, and sending evidence-gated Feishu notifications.
 
-[简体中文](README.zh-CN.md) · [Quickstart](docs/QUICKSTART.md) · [MCP tool catalog](docs/TOOL_CATALOG.md) · [Feishu notifications](docs/FEISHU_NOTIFICATIONS.md) · [Examples](docs/EXAMPLES.md)
+[简体中文](README.zh-CN.md) · [Quickstart](docs/QUICKSTART.md) · [MCP tool catalog](docs/TOOL_CATALOG.md) · [Feishu notifications](docs/FEISHU_NOTIFICATIONS.md) · [Examples](docs/EXAMPLES.md) · [Release notes](docs/RELEASE_NOTES.md)
 
 ## Why it exists
 
@@ -92,3 +92,5 @@ This is a reusable **handoff core**, not a full Feishu publisher. You can connec
 **Contributions welcome:** client-setup examples, publication adapters, formatting tests, documentation improvements and reproducible bug reports. [Contributing](CONTRIBUTING.md) · [Issue tracker](https://github.com/KetenBieber/chat-manuscript-bridge/issues) · [Security](SECURITY.md) · MIT License
 
 **Keywords:** MCP, ChatGPT, Markdown publishing, GitHub archival, Feishu/Lark, research notes, PDF posters, AI writing workflow.
+
+Community validation and client compatibility feedback: [discussion issue #5](https://github.com/KetenBieber/chat-manuscript-bridge/issues/5).
