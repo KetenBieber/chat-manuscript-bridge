@@ -45,6 +45,7 @@ BRIDGE_ALLOWED_DESTINATIONS=personal-knowledge-base
 | reconcile_publication | 只读恢复建议，不会重复上传 |
 | list_manuscripts | 列出私有仓库原稿 ID |
 | inspect_configuration | 检查非敏感配置与当前能力 |
+| inspect_legacy_article | 只读检查旧私有仓库文章、源哈希及历史飞书回执 |
 
 新仓库的建立不意味着 ChatGPT 已经连接自建 MCP；需要先部署，再连接真实服务。详细说明：[API](docs/API.md) · [Architecture](docs/ARCHITECTURE.md) · [Security](SECURITY.md)。
 
