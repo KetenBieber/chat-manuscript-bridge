@@ -55,6 +55,6 @@ Only an external worker with real remote evidence may create the last four recor
 
 The older production service stores its pipeline under different private path conventions, including a fixed historical directory prefix, derived artifacts and Feishu receipts. **Those schemas are incompatible with public v0.1 and have not been migrated.** The live Railway source and environment remain unchanged.
 
-Future work: a tested read-only legacy adapter; the original full deterministic Feishu pipeline ported as provider modules; native display-math recovery in the *same* document; sandbox acceptance; canary cutover; only then production source switch. Preserve old source hashes and duplicate-upload prevention records throughout.
+A read-only legacy original and publication-receipt inspector is now available through inspect_legacy_article; this is **not** an automatic migration or a new upload. Further work: the original full deterministic Feishu pipeline ported as provider modules; native display-math recovery in the *same* document; sandbox acceptance; canary cutover; only then production source switch. Preserve old source hashes and duplicate-upload prevention records throughout.
 
 See [API](API.md) for current callable tools and [Security](../SECURITY.md) for deployment limitations.
