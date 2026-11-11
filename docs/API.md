@@ -1,4 +1,4 @@
-# MCP API v0.1
+# MCP API v0.3
 
 The endpoint is /mcp over authenticated Streamable HTTP, or the local stdio transport.
 
@@ -12,6 +12,9 @@ The endpoint is /mcp over authenticated Streamable HTTP, or the local stdio tran
 | reconcile_publication | article_id | Read-only recovery instructions; safe_to_repeat_upload=false |
 | list_manuscripts | limit from 1 to 200 | Private repository article IDs |
 | inspect_legacy_article | article_id (requires BRIDGE_LEGACY_PREFIX) | Read-only validation of old Git Blob SHA and source-bound Feishu receipt/layout state; no mutation |
+| generate_document_poster | source_path, optional output_dir/dpi/font | Save PDF, per-page PNG and optional long poster in GitHub |
+| send_feishu_notification | article_id, confirm=false | Preview or send one source-verified Feishu IM with real message-ID receipt |
+| get_notification_status | article_id | Check sent / not_sent / outcome_unknown without unsafe resend |
 
 ## Status guarantees
 
@@ -22,7 +25,7 @@ The endpoint is /mcp over authenticated Streamable HTTP, or the local stdio tran
 - layout_verified: a separate, matching online layout audit exists.
 - notification_status=sent: a real source-matched message ID exists, with layout already verified.
 
-The v0.1 MCP server does not write remote Feishu receipts, layout verification or notification records. Those statuses require a separately integrated delivery worker. Existing private production records are NOT automatically compatible with these paths.
+The public MCP server does not write remote Feishu publication receipts or layout verification records. Its optional Feishu IM adapter can write notification attempts and successful message-ID receipts only after verifying worker-generated publication and layout evidence. Those statuses require a separately integrated delivery worker. Existing private production records are NOT automatically compatible with these paths.
 
 ## Storage contract
 
@@ -35,7 +38,8 @@ approvals/<article_id>.json
 attempts/<article_id>.json       worker-only
 receipts/<article_id>.json       worker-only
 layout/<article_id>.json         worker-only
-notifications/<article_id>.json  worker-only
+notifications/<article_id>.json  optional built-in IM adapter or verified worker
+notification-attempts/<article_id>.json  immutable IM claim
 ~~~
 
 Article IDs use ASCII alphanumerics, underscore and hyphen, maximum 80 characters. Body size limit is 1 MiB UTF-8. Figure source map keys must start with async:, async-ref: or async-src:, and values must be absolute HTTPS URLs. They are not fetched by the current MCP service.
