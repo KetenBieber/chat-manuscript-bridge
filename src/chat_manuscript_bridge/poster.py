@@ -172,7 +172,7 @@ def _render(markdown_bytes: bytes, source_path: str, store: Storage,
         pdf_path = tempdir / "document.pdf"
         args = [
             "pandoc", "--sandbox", "--standalone",
-            "--from=markdown+tex_math_dollars-raw_tex-raw_html",
+            "--from=markdown+tex_math_dollars+tex_math_single_backslash-raw_tex-raw_html",
             "--pdf-engine=xelatex",
             "--variable", f"mainfont:{font}",
             "--variable", f"CJKmainfont:{font}",
