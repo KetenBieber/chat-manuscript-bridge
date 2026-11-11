@@ -1,6 +1,6 @@
 # Quickstart / 快速入门
 
-Get a locally running, source-faithful MCP handoff server. This guide exercises the **public v0.2 core interface** only; it does not publish a Feishu document.
+Get a locally running, source-faithful MCP handoff server. This guide exercises the **public v0.3 core interface** only; it does not publish a Feishu document.
 
 ## 1. Prerequisites
 
@@ -83,7 +83,7 @@ Call `inspect_configuration` via your **real MCP client's tool interface**. It s
 ```json
 {
   "service": "chat-manuscript-bridge",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "github_configured": true,
   "allowed_destinations_count": 1,
   "stage": "MCP handoff and durable job-status engine; external delivery worker required"
@@ -127,3 +127,7 @@ For security implications and safe disclosure see [SECURITY.md](../SECURITY.md).
 ## Optional: Markdown to PDF/PNG posters
 
 Install the poster extra and Pandoc + XeLaTeX, then call generate_document_poster on an existing .md path in your GitHub repository. This is separate from the external publication worker. The included Dockerfile.poster supplies the required PDF toolchain. See [Document posters](POSTERS.md).
+
+## Optional verified Feishu IM notification
+
+If your independent publishing worker has supplied **real**, source-bound document and layout receipts, configure the Feishu bot credentials and recipient privately. Preview with send_feishu_notification(confirm=false), then explicitly confirm one send. See [Feishu notifications](FEISHU_NOTIFICATIONS.md). This does not enable document upload.
