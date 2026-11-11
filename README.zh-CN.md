@@ -80,4 +80,4 @@ MIT License · 欢迎 Star、Issue 和 Pull Request。
 
 **关键词：**MCP、ChatGPT、Markdown 归档、飞书自动化、GitHub、科研笔记、PDF 图片推文、AI 写作工作流。
 
-Community validation and client compatibility feedback: [discussion issue #5](https://github.com/KetenBieber/chat-manuscript-bridge/issues/5).
+欢迎参与客户端兼容性验证与反馈：[社区测试 Issue #5](https://github.com/KetenBieber/chat-manuscript-bridge/issues/5)。
