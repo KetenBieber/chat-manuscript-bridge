@@ -31,18 +31,18 @@ Long-form research, technical writing, and working documents are often created o
 
 | You want to… | Use | What you actually get |
 | --- | --- | --- |
-| Preserve a complete manuscript | \`submit_manuscript\` | Immutable GitHub original, SHA256 + Git Blob SHA |
-| Authorize one specific delivery | \`approve_publication\` | Explicit consent tied to the article's immutable source |
-| Save + approve from a conversation | \`publish_this_chat\` | A durable, approved **job**, not a fabricated destination URL |
-| Know what happened | \`get_publication_status\` | Source-bound status and only real, matching delivery receipts |
-| Investigate an uncertain upload | \`reconcile_publication\` | Read-only recovery instructions; no blind duplicate upload |
-| Explore earlier items | \`list_manuscripts\` | IDs in your private data store |
-| Check setup | \`inspect_configuration\` | Non-secret readiness and integration stage |
-| Inspect old private records | \`inspect_legacy_article\` | Optional, strictly read-only legacy source/receipt audit |
+| Preserve a complete manuscript | `submit_manuscript` | Immutable GitHub original, SHA256 + Git Blob SHA |
+| Authorize one specific delivery | `approve_publication` | Explicit consent tied to the article's immutable source |
+| Save + approve from a conversation | `publish_this_chat` | A durable, approved **job**, not a fabricated destination URL |
+| Know what happened | `get_publication_status` | Source-bound status and only real, matching delivery receipts |
+| Investigate an uncertain upload | `reconcile_publication` | Read-only recovery instructions; no blind duplicate upload |
+| Explore earlier items | `list_manuscripts` | IDs in your private data store |
+| Check setup | `inspect_configuration` | Non-secret readiness and integration stage |
+| Inspect old private records | `inspect_legacy_article` | Optional, strictly read-only legacy source/receipt audit |
 
 ### The workflow
 
-\`\`\`mermaid
+```mermaid
 flowchart LR
     A["Conversation / human author<br/>Final manuscript"] --> B["MCP handoff<br/>Submit · Approve"]
     B --> C[("Your PRIVATE GitHub repo<br/>Immutable text + fingerprints")]
@@ -58,7 +58,7 @@ flowchart LR
     class A,B input
     class C,G secure
     class D,E,F future
-\`\`\`
+```
 
 *In v0.1, the external delivery worker and destination-side features are an **integration boundary**, not included runtime components.*
 
@@ -66,31 +66,31 @@ flowchart LR
 
 **Requirements:** Python 3.12+, a private GitHub repository for data, and a fine-grained GitHub token scoped to that repository.
 
-\`\`\`bash
+```bash
 git clone https://github.com/KetenBieber/chat-manuscript-bridge.git
 cd chat-manuscript-bridge
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install -e ".[test]"
 python -m pytest -q
-\`\`\`
+```
 
 Configure these **in your shell or secret manager**, using [.env.example](.env.example) as the reference:
 
-\`\`\`dotenv
+```dotenv
 BRIDGE_GITHUB_REPO=you/private-manuscripts
 BRIDGE_GITHUB_TOKEN=<fine-grained-token>
 BRIDGE_GITHUB_BRANCH=main
 BRIDGE_STORAGE_PREFIX=manuscripts/v1
 BRIDGE_ALLOWED_DESTINATIONS=personal-knowledge-base
 BRIDGE_TRANSPORT=stdio
-\`\`\`
+```
 
 Start a **local stdio MCP server**:
 
-\`\`\`bash
+```bash
 python -m chat_manuscript_bridge
-\`\`\`
+```
 
 To connect an MCP-capable client, configure its stdio command and the required environment variables. **The server speaks MCP over stdin/stdout; it is not a regular interactive CLI.** Copyable client configurations for stdio and authenticated HTTP are in **[Client setup](docs/CLIENT_SETUP.md)**; Windows instructions are in **[Quick start](docs/QUICKSTART.md)**.
 
@@ -98,7 +98,7 @@ To connect an MCP-capable client, configure its stdio command and the required e
 
 A compatible client can call:
 
-\`\`\`json
+```json
 {
   "tool": "publish_this_chat",
   "arguments": {
@@ -109,7 +109,7 @@ A compatible client can call:
     "confirm": true
   }
 }
-\`\`\`
+```
 
 The server stores the exact Markdown in **your private repository** and returns the source's actual SHA values and an approved delivery **job**. It does **not** start a Feishu upload in public v0.1. More response examples and failure cases: **[Examples](docs/EXAMPLES.md)**.
 
@@ -118,9 +118,9 @@ The server stores the exact Markdown in **your private repository** and returns 
 | Principle | Behavior |
 | --- | --- |
 | **The original is canonical** | No rewriting, trimming, Markdown normalization, or summarization; byte-for-byte storage and readback |
-| **Consent is explicit** | An allowlisted destination, an immutable source hash, and \`confirm=true\` for each article |
+| **Consent is explicit** | An allowlisted destination, an immutable source hash, and `confirm=true` for each article |
 | **Retry is not re-upload** | A pending or ambiguous external attempt blocks duplicate publication until reconciled |
-| **Every state has evidence** | \`saved\`, \`approved_for_delivery\`, \`published_api_verified\`, \`layout_verified\` are distinct |
+| **Every state has evidence** | `saved`, `approved_for_delivery`, `published_api_verified`, `layout_verified` are distinct |
 | **Your data stays yours** | Open-source code and real manuscripts live in different repositories; no real tokens or production receipts in this repo |
 | **Small, inspectable tools** | Eight purpose-built MCP tools with stable, source-bound responses |
 
