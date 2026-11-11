@@ -1,6 +1,6 @@
 # MCP Tool catalog
 
-Eight source-aware tools **plus two guided MCP prompts** in public **v0.2.0**. Tool names are exact. They are exposed by a correctly connected MCP client, not automatically by GitHub, Railway, a skill file or this README.
+Eleven source-aware tools **plus two guided MCP prompts** in public **v0.3.0**. Tool names are exact. They are exposed by a correctly connected MCP client, not automatically by GitHub, Railway, a skill file or this README.
 
 ## Source and authorization tools
 
@@ -75,7 +75,7 @@ stateDiagram-v2
     upload_outcome_unknown --> published_api_verified: real matching API receipt
     published_api_verified --> layout_verified: exact-source online audit
     note right of approved_for_delivery
-      Public v0.1 stops here.
+      The public source handoff stops here; an external publisher is required.
       Worker integration is external.
     end note
 ```
@@ -89,7 +89,7 @@ stateDiagram-v2
 | `layout_verified` | Matching real online layout audit | Yes, subject to audit scope |
 | `notification_status=sent` | Matching real IM `message_id` after layout verification | Message API accepted; does not prove recipient read it |
 
-**No fabricated evidence.** Public v0.1 does not write attempt, receipt, layout, or notification files. Integrations must implement and verify those records independently.
+**No fabricated evidence.** An external publishing worker must write real publication attempt, receipt and layout records. The optional built-in IM adapter writes a source-bound notification attempt and Feishu message-ID receipt **only after** verifying those records.
 
 See [API.md](API.md) for exact storage paths and [Examples.md](EXAMPLES.md) for sample calls.
 
@@ -116,3 +116,18 @@ Outputs: document.pdf, page-001.png, page-002.png, and poster-long.png when size
 Install the poster extra, Pandoc, XeLaTeX and a CJK font. Choose the optional Dockerfile.poster image for a hosted installation. No Feishu upload is triggered.
 
 See [Document posters](POSTERS.md).
+
+
+## Optional verified Feishu IM message
+
+### send_feishu_notification(article_id, confirm=false)
+
+Requires real, matching external Feishu publication and layout audit receipts. With confirm=false the tool only previews. With confirm=true it acquires a Feishu tenant token, stores a one-time immutable notification claim, sends a text message to the explicitly configured recipient and records the real message_id.
+
+**If the send outcome is uncertain, do not retry.** A claimed attempt without a successful receipt is an explicit stop condition. The built-in adapter never uploads documents.
+
+### get_notification_status(article_id)
+
+Returns sent with real message_id, not_sent, or outcome_unknown with safe_to_resend=false.
+
+See [Feishu notifications](FEISHU_NOTIFICATIONS.md) for configuration, privacy and recovery.
