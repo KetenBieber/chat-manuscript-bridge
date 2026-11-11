@@ -53,7 +53,8 @@ class GitHubStorage:
             raise BridgeError("Invalid private repository path")
         return "https://api.github.com/repos/" + self.repository + "/contents/" + urllib.parse.quote(path, safe="/")
 
-    def _request(self, method: str, url: str, body: dict | None = None) -> object:
+    def _request(self, method: str, url: str, body: dict | None = None,
+                 max_response_bytes: int = 3 * 1024 * 1024) -> object:
         raw = None if body is None else json.dumps(body).encode("utf-8")
         request = urllib.request.Request(url, data=raw, method=method, headers={
             "Authorization": "Bearer " + self.token,
@@ -64,7 +65,9 @@ class GitHubStorage:
         })
         try:
             with urllib.request.urlopen(request, timeout=30) as response:
-                payload = response.read(3 * 1024 * 1024)
+                payload = response.read(max_response_bytes + 1)
+            if len(payload) > max_response_bytes:
+                raise BridgeError("GitHub response exceeds safe size limit")
             return json.loads(payload.decode("utf-8"))
         except urllib.error.HTTPError as exc:
             if exc.code == 404:
@@ -82,14 +85,32 @@ class GitHubStorage:
         obj = self._request("GET", url)
         if obj is None:
             return None
-        if not isinstance(obj, dict) or obj.get("type") != "file" or obj.get("encoding") != "base64":
-            raise BridgeError("GitHub file is not a small base64-encoded blob")
+        if not isinstance(obj, dict) or obj.get("type") != "file":
+            raise BridgeError("GitHub path is not an ordinary file")
+        blob_sha = obj.get("sha")
+        if not isinstance(blob_sha, str) or len(blob_sha) != 40:
+            raise BridgeError("GitHub file has no verified Git Blob SHA")
+        if obj.get("encoding") == "base64":
+            encoded = obj.get("content")
+        elif obj.get("encoding") == "none":
+            # GitHub Contents API returns metadata only for larger images.
+            # Read that exact blob instead of silently losing Figure assets.
+            url = "https://api.github.com/repos/" + self.repository + "/git/blobs/" + blob_sha
+            blob = self._request("GET", url, max_response_bytes=15 * 1024 * 1024)
+            if (not isinstance(blob, dict) or blob.get("sha") != blob_sha
+                    or blob.get("encoding") != "base64"):
+                raise BridgeError("GitHub large binary blob unavailable")
+            encoded = blob.get("content")
+        else:
+            raise BridgeError("GitHub file uses unsupported encoding")
+        if not isinstance(encoded, str):
+            raise BridgeError("GitHub file has no decodable content")
         try:
-            raw = base64.b64decode(obj["content"], validate=False)
-        except (KeyError, ValueError, TypeError) as exc:
-            raise BridgeError("Invalid GitHub file content") from exc
-        if len(raw) > 2 * 1024 * 1024 or git_blob_sha(raw) != obj.get("sha"):
-            raise BridgeError("GitHub file SHA verification failed")
+            raw = base64.b64decode(encoded, validate=False)
+        except (ValueError, TypeError) as exc:
+            raise BridgeError("Invalid GitHub base64 content") from exc
+        if len(raw) > 8 * 1024 * 1024 or git_blob_sha(raw) != blob_sha:
+            raise BridgeError("GitHub file SHA verification or image size failed")
         return raw
 
     def create(self, path: str, data: bytes) -> str:
