@@ -209,6 +209,12 @@ def _render(markdown_bytes: bytes, source_path: str, store: Storage,
                 diagnosis = "pandoc_sandbox_denied"
             elif "Error producing PDF." in output:
                 diagnosis = "pdf_engine_error"
+            # A bounded LaTeX-error header is safer and far more actionable
+            # than complete Pandoc stderr (which can echo manuscript prose).
+            header = re.search(r"(?m)^! ([^\\n]{1,140})", output)
+            if header:
+                candidate = re.sub(r"[^A-Za-z0-9 .,:()!_+\\-]", "", header.group(1))
+                diagnosis += " (" + candidate[:95] + ")"
             raise BridgeError("Poster PDF compilation failed: " + diagnosis)
         pdf_bytes = pdf_path.read_bytes()
         if not pdf_bytes.startswith(b"%PDF") or len(pdf_bytes) > 20 * 1024 * 1024:
