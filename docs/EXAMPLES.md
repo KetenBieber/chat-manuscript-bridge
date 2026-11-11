@@ -8,7 +8,7 @@ The following walkthrough uses **invented manuscript data** and a private sample
 {"tool":"inspect_configuration","arguments":{}}
 ```
 
-Example response (values shown for a configured sample server):
+Example response excerpt (values shown for a configured sample server; the real response also contains a detailed `capabilities` and `usage` map):
 
 ```json
 {
@@ -145,3 +145,7 @@ This is an **illustrative source-mapping URL**, not a verified real paper Figure
 When `BRIDGE_LEGACY_PREFIX` is configured, `inspect_legacy_article` reads existing source and publication evidence only. It does not migrate, alter or re-publish a historical document.
 
 See the [Tool catalog](TOOL_CATALOG.md) for exact inputs and [Architecture](ARCHITECTURE.md) for the protocol.
+
+## Optional MCP prompt guidance
+
+Where supported, request `manuscript_handoff_checklist` before approving an original or `publication_reconciliation_checklist` to plan a no-duplicate recovery. These are static guidance prompts, not publishing tools.
