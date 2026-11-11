@@ -58,6 +58,8 @@ class ManuscriptService:
         if existing_manifest:
             if any(existing_manifest.get(k) != v for k, v in expected.items()):
                 raise Conflict("Article ID already belongs to a different source/category/Figure map")
+            if self.storage.read(expected["source_path"]) is None:
+                raise BridgeError("Manifest exists but original is missing; do not silently recreate it")
         # An interrupted first submission can be safely resumed with the same bytes.
         self.storage.create(expected["source_path"], original)
         saved = existing_manifest or {**expected, "created_at_utc": now_utc()}
@@ -132,6 +134,8 @@ class ManuscriptService:
             result["blocker"] = "Existing attempt must be reconciled; never blindly repeat upload"
         receipt = self.record("receipts", article_id)
         if receipt:
+            if approval is None or approval.get("explicit_user_confirmation") is not True:
+                raise BridgeError("Published receipt has no matching explicit approval")
             if (receipt.get("source_sha256") != ref
                     or receipt.get("published") is not True
                     or not isinstance(receipt.get("document_url"), str)
