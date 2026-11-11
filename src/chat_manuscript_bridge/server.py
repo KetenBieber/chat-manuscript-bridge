@@ -44,7 +44,12 @@ def service() -> ManuscriptService:
 
 @mcp.tool()
 def inspect_configuration() -> dict:
-    """Non-secret readiness view; no credentials, destination tokens or Open IDs."""
+    """Inspect setup and supported capabilities without exposing credentials.
+
+    Start here after connecting MCP. This reports configuration presence and
+    the public v0.1 integration boundary; it does not prove GitHub permissions
+    or that an external publication worker is running.
+    """
     return {
         "service": "chat-manuscript-bridge",
         "version": "0.1.0",
@@ -53,19 +58,45 @@ def inspect_configuration() -> dict:
             None, (x.strip() for x in os.getenv("BRIDGE_ALLOWED_DESTINATIONS", "").split(","))
         ))),
         "stage": "MCP handoff and durable job-status engine; external delivery worker required",
+        "capabilities": {
+            "immutable_github_originals": True,
+            "sha256_and_git_blob_sha": True,
+            "single_article_authorization": True,
+            "source_bound_status_and_reconciliation": True,
+            "feishu_import_worker_included": False,
+            "oauth_21_authorization_server_included": False,
+        },
+        "usage": {
+            "first_write_tool": "submit_manuscript",
+            "one_step_handoff_tool": "publish_this_chat",
+            "inspect_tool": "get_publication_status",
+            "safe_recovery_tool": "reconcile_publication",
+            "note": "Approved means queued for an external worker, not published.",
+        },
     }
 
 
 @mcp.tool()
 def submit_manuscript(article_id: str, markdown: str, category: str,
                       image_sources: dict[str, str] | None = None) -> dict:
-    """Persist exact UTF-8 original in a private GitHub store; never publishes by itself."""
+    """Save final Markdown byte-for-byte in YOUR private GitHub data repo.
+
+    Requires article_id, markdown and category; optional image_sources maps
+    original Figure markers to verified HTTPS URLs. Uses immutable IDs,
+    computes actual SHA256/Git Blob SHA, and rejects source drift. Saves only;
+    it NEVER uploads to Feishu or summarizes the manuscript.
+    """
     return service().submit(article_id, markdown, category, image_sources)
 
 
 @mcp.tool()
 def approve_publication(article_id: str, destination: str, confirm: bool = False) -> dict:
-    """Approve one SHA-bound article to one allowlisted logical destination."""
+    """Review or authorize ONE existing immutable source for a logical destination.
+
+    confirm=false previews the article SHA and requires explicit consent.
+    confirm=true stores a per-article approval for a server-allowlisted
+    destination. A successful approval is NOT a remote publication receipt.
+    """
     return service().approve(article_id, destination, confirm)
 
 
@@ -73,10 +104,13 @@ def approve_publication(article_id: str, destination: str, confirm: bool = False
 def publish_this_chat(article_id: str, markdown: str, category: str,
                       destination: str, confirm: bool = False,
                       image_sources: dict[str, str] | None = None) -> dict:
-    """One chat call to save + authorize delivery, returning status not a fake URL.
+    """One-step handoff of the FINAL, author-approved conversation manuscript.
 
-    Requires explicit single-article consent. No separate ChatGPT session or
-    autonomous AI author is invoked. The delivery worker is independent.
+    confirm=false previews and does not save. With explicit per-article
+    permission, confirm=true stores exact Markdown, preserves optional
+    Figure mappings, then approves an allowlisted logical destination.
+    Public v0.1 returns a durable job with delivery_worker_started=false:
+    NO Feishu upload, fabricated link or auto-rewritten article.
     """
     if not confirm:
         return {"article_id": article_id, "requires_confirmation": True,
@@ -94,32 +128,72 @@ def publish_this_chat(article_id: str, markdown: str, category: str,
 
 @mcp.tool()
 def get_publication_status(article_id: str) -> dict:
-    """Read the durable state and real source-bound receipt when one exists."""
+    """Inspect this article's verified GitHub/worker evidence by immutable ID.
+
+    Separately reports saved, approved_for_delivery, uncertain upload,
+    published_api_verified and layout_verified, plus notification_status.
+    An absent real remote receipt yields no document URL.
+    """
     return service().status(article_id)
 
 
 @mcp.tool()
 def reconcile_publication(article_id: str) -> dict:
-    """Read-only failure recovery advice; never repeats an ambiguous Feishu upload."""
+    """Get read-only reconciliation instructions for a blocked or uncertain job.
+
+    This call makes NO remote changes and returns safe_to_repeat_upload=false.
+    If an external upload might already exist, inspect the SAME remote
+    document/attempt before allowing any new upload.
+    """
     return service().reconcile(article_id)
 
 
 @mcp.tool()
 def list_manuscripts(limit: int = 50) -> dict:
-    """List immutable manuscript IDs in the configured private GitHub repository."""
+    """List article IDs (1–200 items) in the private data repository.
+
+    Returns identifiers only, never the original paper text or credentials.
+    """
     return service().list_articles(limit)
 
 @mcp.tool()
 def inspect_legacy_article(article_id: str) -> dict:
-    """Read-only SHA/status audit of an older private manuscript store.
+    """Read-only source and historic receipt inspection for an existing article.
 
-    Requires the operator to configure BRIDGE_LEGACY_PREFIX; never modifies the
-    old repository or re-uploads existing Feishu documents.
+    Requires BRIDGE_LEGACY_PREFIX. Does NOT migrate, overwrite, republish,
+    retry ambiguous imports or expose legacy full manuscript content.
     """
     prefix = os.getenv("BRIDGE_LEGACY_PREFIX")
     if not prefix:
         raise BridgeError("BRIDGE_LEGACY_PREFIX is not configured")
     return LegacyReader(service().storage, prefix).inspect(article_id)
+
+
+@mcp.prompt()
+def manuscript_handoff_checklist() -> str:
+    """Source-fidelity checklist to prepare an author-approved MCP handoff."""
+    return (
+        "Before calling submit_manuscript or publish_this_chat: obtain the complete "
+        "final article actually present in this conversation; retain each paragraph, "
+        "math expression, link, caption and verified Figure source. Ask for explicit "
+        "approval of THIS immutable article ID and one allowlisted logical destination. "
+        "Never replace the manuscript with a shorter AI summary. After handoff, "
+        "inspect the source hashes and exact status: an approved job is NOT a "
+        "published remote document in public v0.1."
+    )
+
+
+@mcp.prompt()
+def publication_reconciliation_checklist() -> str:
+    """Safe recovery plan when remote publication seems to be stalled."""
+    return (
+        "Call get_publication_status and reconcile_publication for the existing "
+        "article_id. Verify actual SHA256 and Git Blob SHA; inspect existing "
+        "attempt, receipt, layout and message-ID evidence. An unknown/timeout "
+        "remote upload outcome must NOT be retried blindly or moved to a new "
+        "article ID. Preserve the original and repair the same remote document "
+        "only when a real integrated worker can prove its identity."
+    )
 
 
 class BearerAuth:
