@@ -191,8 +191,25 @@ def _render(markdown_bytes: bytes, source_path: str, store: Storage,
         except subprocess.TimeoutExpired as exc:
             raise BridgeError("Poster PDF compiler exceeded time limit") from exc
         if cp.returncode != 0 or not pdf_path.exists():
-            # Tool output might include private file names and article prose.
-            raise BridgeError("Poster PDF compilation failed; check installed fonts and LaTeX packages")
+            # Report only a safely classified TeX error; never log private
+            # source lines, file paths or the complete compiler transcript.
+            output = cp.stderr or ""
+            diagnosis = "unclassified"
+            if re.search(r"(?i)fontspec error|font .* cannot be found|font .* not found", output):
+                diagnosis = "missing_font"
+            elif re.search(r"(?i)LaTeX Error: File [^\\n]+ not found", output):
+                diagnosis = "missing_latex_package"
+            elif re.search(r"(?i)unable to load picture|cannot find image|no such file or directory", output):
+                diagnosis = "missing_figure"
+            elif re.search(r"(?i)Undefined control sequence", output):
+                diagnosis = "unsupported_latex_command"
+            elif re.search(r"(?i)Missing \$ inserted|Double subscript|Extra \\}", output):
+                diagnosis = "malformed_math"
+            elif re.search(r"(?i)not allowed in sandbox", output):
+                diagnosis = "pandoc_sandbox_denied"
+            elif "Error producing PDF." in output:
+                diagnosis = "pdf_engine_error"
+            raise BridgeError("Poster PDF compilation failed: " + diagnosis)
         pdf_bytes = pdf_path.read_bytes()
         if not pdf_bytes.startswith(b"%PDF") or len(pdf_bytes) > 20 * 1024 * 1024:
             raise BridgeError("Generated PDF is invalid or too large")
