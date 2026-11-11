@@ -66,6 +66,7 @@ def inspect_configuration() -> dict:
             "single_article_authorization": True,
             "source_bound_status_and_reconciliation": True,
             "feishu_import_worker_included": False,
+            "feishu_verified_im_notification_adapter": True,
             "oauth_21_authorization_server_included": False,
             "github_document_poster_export": True,
             "poster_runtime_ready": bool(shutil.which("pandoc") and shutil.which("xelatex") and
@@ -77,6 +78,7 @@ def inspect_configuration() -> dict:
             "inspect_tool": "get_publication_status",
             "safe_recovery_tool": "reconcile_publication",
             "poster_export_tool": "generate_document_poster",
+            "feishu_notification_tool": "send_feishu_notification",
             "note": "Approved means queued for an external worker, not published.",
         },
     }
@@ -192,6 +194,27 @@ def inspect_legacy_article(article_id: str) -> dict:
     if not prefix:
         raise BridgeError("BRIDGE_LEGACY_PREFIX is not configured")
     return LegacyReader(service().storage, prefix).inspect(article_id)
+
+
+@mcp.tool()
+def send_feishu_notification(article_id: str, confirm: bool = False) -> dict:
+    """Send a source-verified Feishu IM alert after external publication.
+
+    confirm=false previews without sending. confirm=true is a once-only
+    authorization. An uncertain send creates a permanent claim and is NEVER
+    retried automatically. Requires an actual published receipt and matching
+    verified layout from an independently connected publishing worker.
+    """
+    from .feishu_notification import notify_publication
+    return notify_publication(service(), article_id, confirm=confirm)
+
+
+@mcp.tool()
+def get_notification_status(article_id: str) -> dict:
+    """Check sent, not_sent or outcome_unknown; do not retry ambiguous sends."""
+    from .feishu_notification import notification_status
+    return notification_status(service(), article_id)
+
 
 
 @mcp.prompt()
