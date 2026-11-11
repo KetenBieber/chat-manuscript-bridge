@@ -1,0 +1,18 @@
+# Optional full-feature image for Markdown -> XeLaTeX PDF -> PNG posters.
+# This image is larger than the core MCP image because it includes TeX.
+FROM python:3.12-slim
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    pandoc texlive-xetex texlive-lang-chinese fonts-noto-cjk ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY pyproject.toml README.md LICENSE ./
+COPY src/ ./src/
+RUN pip install --no-cache-dir ".[poster]"
+
+ENV BRIDGE_TRANSPORT=http
+EXPOSE 8000
+USER 65532
+CMD ["uvicorn", "chat_manuscript_bridge.server:app", "--host", "0.0.0.0", "--port", "8000"]
