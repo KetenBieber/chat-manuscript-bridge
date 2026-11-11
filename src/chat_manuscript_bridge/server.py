@@ -54,7 +54,7 @@ def inspect_configuration() -> dict:
     """
     return {
         "service": "chat-manuscript-bridge",
-        "version": "0.2.0",
+        "version": "0.3.0",
         "github_configured": bool(os.getenv("BRIDGE_GITHUB_REPO") and os.getenv("BRIDGE_GITHUB_TOKEN")),
         "allowed_destinations_count": len(tuple(filter(
             None, (x.strip() for x in os.getenv("BRIDGE_ALLOWED_DESTINATIONS", "").split(","))
