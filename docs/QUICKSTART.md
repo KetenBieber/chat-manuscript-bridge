@@ -78,7 +78,7 @@ Client configuration syntax and secret-storage capabilities vary. On Windows, re
 
 ## 5. Verify the connection
 
-Call `inspect_configuration` via your **real MCP client's tool interface**. It should report:
+Call `inspect_configuration` via your **real MCP client's tool interface**. It should report at least the following fields (the actual response also includes `capabilities` and `usage`):
 
 ```json
 {
