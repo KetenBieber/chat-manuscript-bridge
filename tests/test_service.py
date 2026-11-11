@@ -100,6 +100,7 @@ def test_unknown_remote_attempt_remains_blocked():
 def test_layout_must_match_source_to_claim_success():
     service, store = svc()
     service.submit("p", "Original", "research")
+    service.approve("p", "personal-vault", confirm=True)
     ref = service.record("jobs", "p")["source_sha256"]
     from chat_manuscript_bridge.models import canonical_json
     store.files["workspace/v1/receipts/p.json"] = canonical_json({
@@ -136,3 +137,25 @@ def test_list_ids_is_bounded():
     for name in ("a", "b", "c"):
         service.submit(name, name, "research")
     assert service.list_articles(limit=2)["article_ids"] == ["b", "c"]
+
+
+def test_receipt_without_explicit_approval_is_rejected():
+    service, store = svc()
+    service.submit("p", "Original", "research")
+    ref = service.record("jobs", "p")["source_sha256"]
+    from chat_manuscript_bridge.models import canonical_json
+    store.files["workspace/v1/receipts/p.json"] = canonical_json({
+        "schema_version": 1, "article_id": "p", "source_sha256": ref,
+        "published": True, "document_url": "https://example.feishu.cn/docx/test",
+    })
+    with pytest.raises(BridgeError):
+        service.status("p")
+
+
+def test_missing_original_with_existing_manifest_is_not_recreated():
+    service, store = svc()
+    service.submit("p", "Original", "research")
+    del store.files["workspace/v1/originals/p.md"]
+    with pytest.raises(BridgeError):
+        service.submit("p", "Original", "research")
+    assert "workspace/v1/originals/p.md" not in store.files
