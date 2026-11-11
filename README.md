@@ -122,7 +122,7 @@ The server stores the exact Markdown in **your private repository** and returns 
 | **Retry is not re-upload** | A pending or ambiguous external attempt blocks duplicate publication until reconciled |
 | **Every state has evidence** | `saved`, `approved_for_delivery`, `published_api_verified`, `layout_verified` are distinct |
 | **Your data stays yours** | Open-source code and real manuscripts live in different repositories; no real tokens or production receipts in this repo |
-| **Small, inspectable tools** | Eight purpose-built MCP tools with stable, source-bound responses |
+| **Small, inspectable tools** | Eight purpose-built MCP tools plus two optional guided safety prompts |
 
 ## Documentation
 
