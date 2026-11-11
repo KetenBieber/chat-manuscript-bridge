@@ -44,6 +44,16 @@ MCP 工具名称：**generate_document_poster**。
 
 文件会写入当前 MCP 服务配置的 GitHub 仓库；已存在的**不同内容不会覆盖**。重新排版可选择新的输出目录。
 
+## 不使用 MCP 也能生成
+
+如果需要从终端执行，安装完成后配置 GitHub 环境变量，再运行：
+
+~~~bash
+chat-manuscript-poster --source manuscripts/v1/originals/example-article.md --output posters/example-article
+~~~
+
+命令会直接读取配置好的 GitHub 仓库并提交 PDF/PNG 文件。环境中需有 Pandoc、XeLaTeX 和对应字体。
+
 ## 图片与排版
 
 - 支持普通 Markdown 图片语法，例如：`![图注](images/diagram.png)`。
