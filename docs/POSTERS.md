@@ -60,3 +60,8 @@ MCP 工具名称：**generate_document_poster**。
 海报工具只把已有 Markdown 转换为 PDF 和 PNG，并保存 GitHub 文件；不会重写原稿，也不会自动上传飞书。
 
 [快速开始](QUICKSTART.md) · [全部工具](TOOL_CATALOG.md)
+
+
+### Docker 部署
+
+如果希望通过 HTTP MCP 在服务器上生成海报，可以使用项目根目录的 **Dockerfile.poster**。它包含 Pandoc、XeLaTeX、中文字体和 Python 图片依赖（镜像会明显大于基础 MCP 镜像）。
