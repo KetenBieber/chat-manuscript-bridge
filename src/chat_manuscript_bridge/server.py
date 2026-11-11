@@ -65,12 +65,14 @@ def inspect_configuration() -> dict:
             "source_bound_status_and_reconciliation": True,
             "feishu_import_worker_included": False,
             "oauth_21_authorization_server_included": False,
+            "github_document_poster_export": True,
         },
         "usage": {
             "first_write_tool": "submit_manuscript",
             "one_step_handoff_tool": "publish_this_chat",
             "inspect_tool": "get_publication_status",
             "safe_recovery_tool": "reconcile_publication",
+            "poster_export_tool": "generate_document_poster",
             "note": "Approved means queued for an external worker, not published.",
         },
     }
@@ -155,6 +157,25 @@ def list_manuscripts(limit: int = 50) -> dict:
     Returns identifiers only, never the original paper text or credentials.
     """
     return service().list_articles(limit)
+
+@mcp.tool()
+def generate_document_poster(source_path: str, output_dir: str | None = None,
+                             dpi: int = 140, font: str = "Noto Serif CJK SC") -> dict:
+    """Turn an existing GitHub Markdown file into a PDF and PNG posters.
+
+    Reads source_path (for example manuscripts/v1/originals/example.md)
+    from the configured repository. Writes document.pdf, page-001.png,
+    page-002.png, ... and an optional poster-long.png to an output folder
+    in that SAME repository (default posters/example/).
+    Requires the poster dependencies, Pandoc and XeLaTeX on the server.
+    This tool never rewrites or publishes to Feishu.
+    """
+    from .poster import generate_document_poster as make_poster
+    return make_poster(
+        service().storage, source_path, output_dir, dpi=dpi, font=font,
+        image_hosts=os.getenv("BRIDGE_POSTER_IMAGE_HOSTS", ""),
+    )
+
 
 @mcp.tool()
 def inspect_legacy_article(article_id: str) -> dict:
