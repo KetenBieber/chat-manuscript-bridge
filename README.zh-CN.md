@@ -49,6 +49,12 @@ python -m pip install -e ".[poster]"
 
 并安装 Pandoc、XeLaTeX 和合适的字体。具体步骤见 [文档海报](docs/POSTERS.md)。
 
+也可以不通过 MCP，在已经配置 GitHub 变量的终端中执行：
+
+~~~bash
+chat-manuscript-poster --source manuscripts/v1/originals/my-article.md --output posters/my-article
+~~~
+
 连接后可以直接说：
 
 > 把 GitHub 中的 my-article.md 做成 PDF 和长图海报，放到 posters/my-article 文件夹。
