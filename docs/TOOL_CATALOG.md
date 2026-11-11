@@ -1,6 +1,6 @@
 # MCP Tool catalog
 
-Eight source-aware tools in public **v0.1.0**. Tool names are exact. They are exposed by a correctly connected MCP client, not automatically by GitHub, Railway, a skill file or this README.
+Eight source-aware tools **plus two guided MCP prompts** in public **v0.1.0**. Tool names are exact. They are exposed by a correctly connected MCP client, not automatically by GitHub, Railway, a skill file or this README.
 
 ## Source and authorization tools
 
@@ -92,3 +92,12 @@ stateDiagram-v2
 **No fabricated evidence.** Public v0.1 does not write attempt, receipt, layout, or notification files. Integrations must implement and verify those records independently.
 
 See [API.md](API.md) for exact storage paths and [Examples.md](EXAMPLES.md) for sample calls.
+
+## Guided safety prompts
+
+These prompts are discoverable where the MCP client supports prompts. They do not modify files or send anything to Feishu.
+
+| Prompt | Purpose |
+| --- | --- |
+| `manuscript_handoff_checklist` | Verify complete final source, figure mapping, explicit per-article consent and evidence-based status |
+| `publication_reconciliation_checklist` | Inspect uncertain external outcomes without repeating an ambiguous upload |
