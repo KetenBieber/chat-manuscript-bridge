@@ -51,7 +51,7 @@ Record a short terminal walkthrough using an intentionally synthetic manuscript,
 ## Release / promotion checklist
 
 - Verify tests with a local Python 3.12/3.13 environment and document real results.
-- Restore GitHub Actions or provide a reproducible independent test log before marking CI green.
+- Verify locally with `python -m compileall -q src` and `python -m pytest -q`; preserve a reproducible test log. GitHub Actions is not part of this project or a release prerequisite.
 - Review tag and release artifacts; publish a GitHub Release only after validation.
 - Configure repository description and topics on GitHub (not automatically updated by a README commit).
 - Share the Chinese and English introductions where relevant; collect reproducible feedback, do not inflate stars/downloads or claim unimplemented features.
