@@ -25,22 +25,22 @@ AI 对话里一篇长论文往往经过多轮追问和修订，最后定稿才�
 **Chat Manuscript Bridge 把文章的写作权与交付权分开：** 原稿由用户和当前对话完成；MCP 保存原始 UTF-8 字节、原稿 SHA256 和真实 Git Blob SHA；发布授权精确绑定该稿；状态查询只依据确实存在的回执。以后添加飞书、Notion 或其他目的地，也遵守同一套不重复上传的原则。
 
 > [!IMPORTANT]
-> **公开 v0.1 是原稿交接与状态引擎，不是完整飞书发布器。** 已实现 MCP 连接、私有 GitHub 存储、逐篇授权、状态查询和恢复建议。**飞书 DOCX 上传、原生公式及图片布局验收、飞书消息通知还没有迁移到此公开仓库。** 它们在独立的 Private 生产项目中实现，不能当成这个公开版本已经提供的能力。收到 \`approved_for_delivery\` 绝不表示文档已经上传。
+> **公开 v0.1 是原稿交接与状态引擎，不是完整飞书发布器。** 已实现 MCP 连接、私有 GitHub 存储、逐篇授权、状态查询和恢复建议。**飞书 DOCX 上传、原生公式及图片布局验收、飞书消息通知还没有迁移到此公开仓库。** 它们在独立的 Private 生产项目中实现，不能当成这个公开版本已经提供的能力。收到 `approved_for_delivery` 绝不表示文档已经上传。
 
 ## 你能用它做什么？
 
 | 工作 | MCP 工具 | 返回的真实证据 |
 | --- | --- | --- |
-| 保存一份完整定稿 | \`submit_manuscript\` | 私有 GitHub 原稿、SHA256、Git Blob SHA |
-| 授权单篇发布 | \`approve_publication\` | 与原稿哈希绑定的确认记录 |
-| 从聊天一步交接 | \`publish_this_chat\` | 保存 + 授权结果，**不伪造飞书链接** |
-| 查询进度和问题 | \`get_publication_status\` | 已存在的、来源匹配的状态与回执 |
-| 处理不确定结果 | \`reconcile_publication\` | 只读恢复建议，不会重复上传 |
-| 查看自己的文章 | \`list_manuscripts\` | Private 仓库文章 ID |
-| 检查接入配置 | \`inspect_configuration\` | 不含密钥的环境与能力状态 |
-| 检查旧仓库 | \`inspect_legacy_article\` | 可选的只读历史原稿与交付回执检查 |
+| 保存一份完整定稿 | `submit_manuscript` | 私有 GitHub 原稿、SHA256、Git Blob SHA |
+| 授权单篇发布 | `approve_publication` | 与原稿哈希绑定的确认记录 |
+| 从聊天一步交接 | `publish_this_chat` | 保存 + 授权结果，**不伪造飞书链接** |
+| 查询进度和问题 | `get_publication_status` | 已存在的、来源匹配的状态与回执 |
+| 处理不确定结果 | `reconcile_publication` | 只读恢复建议，不会重复上传 |
+| 查看自己的文章 | `list_manuscripts` | Private 仓库文章 ID |
+| 检查接入配置 | `inspect_configuration` | 不含密钥的环境与能力状态 |
+| 检查旧仓库 | `inspect_legacy_article` | 可选的只读历史原稿与交付回执检查 |
 
-\`\`\`mermaid
+```mermaid
 flowchart LR
  A["原作者 / ChatGPT<br/>完整定稿"] --> B["MCP 工具<br/>保存 · 逐篇授权"]
  B --> C[("自己的 Private GitHub<br/>原文 + 两类哈希")]
@@ -56,43 +56,43 @@ flowchart LR
  class A,B authored
  class C,G stored
  class D,E,F planned
-\`\`\`
+```
 
 ## 快速开始
 
 需要 Python 3.12+ 和用于存稿的 **Private GitHub 仓库**。GitHub Fine-grained Token 应只授权该仓库，不要交给模型或提交到公开代码库。
 
-\`\`\`bash
+```bash
 git clone https://github.com/KetenBieber/chat-manuscript-bridge.git
 cd chat-manuscript-bridge
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install -e ".[test]"
 python -m pytest -q
-\`\`\`
+```
 
 在环境变量中配置：
 
-\`\`\`dotenv
+```dotenv
 BRIDGE_GITHUB_REPO=you/private-manuscripts
 BRIDGE_GITHUB_TOKEN=<你的细粒度GitHubToken>
 BRIDGE_GITHUB_BRANCH=main
 BRIDGE_STORAGE_PREFIX=manuscripts/v1
 BRIDGE_ALLOWED_DESTINATIONS=personal-knowledge-base
 BRIDGE_TRANSPORT=stdio
-\`\`\`
+```
 
 运行本地 MCP（stdio）：
 
-\`\`\`bash
+```bash
 python -m chat_manuscript_bridge
-\`\`\`
+```
 
 这条命令供 MCP 客户端通过标准输入/输出连接，**不是用于手工聊天的终端界面**。Windows PowerShell、MCP 客户端配置、Docker / HTTP 部署、鉴权方式见 **[完整入门](docs/QUICKSTART.md)** 与 **[客户端接入](docs/CLIENT_SETUP.md)**。
 
 ### 对话提交示例
 
-\`\`\`json
+```json
 {
   "tool": "publish_this_chat",
   "arguments": {
@@ -103,7 +103,7 @@ python -m chat_manuscript_bridge
     "confirm": true
   }
 }
-\`\`\`
+```
 
 当前公开版本会返回真实的文章指纹、逐篇授权和交付作业状态。**未接入外部 Worker 时不会上传飞书**。完整示例：[查看一次从保存到查询的调用过程](docs/EXAMPLES.md)。
 
@@ -115,7 +115,7 @@ python -m chat_manuscript_bridge
 
 **不重复上传。** 上传结果未知时必须检查已有远端文档，不能因为超时就再生成一个。
 
-**状态有证据。** \`saved\`、\`approved_for_delivery\`、\`published_api_verified\`、\`layout_verified\` 和 \`notification_status=sent\` 有不同的验收要求。
+**状态有证据。** `saved`、`approved_for_delivery`、`published_api_verified`、`layout_verified` 和 `notification_status=sent` 有不同的验收要求。
 
 **代码数据隔离。** Public 只放通用代码、合成案例、测试与文档；真实原稿、个人凭据和飞书交付记录属于你的 Private 仓库。
 
