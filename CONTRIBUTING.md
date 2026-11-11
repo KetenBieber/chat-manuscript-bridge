@@ -6,7 +6,7 @@ Thanks for improving a source-faithful MCP delivery protocol. The project accept
 
 **Only use synthetic manuscript content.** Never commit or post private articles, real research notes, GitHub tokens, Feishu recipient IDs, production folder IDs, signed URLs, message IDs or other personal delivery evidence.
 
-Check [Roadmap](docs/ROADMAP.md) and [Security](SECURITY.md) so proposals match the **public v0.1** feature boundary.
+Check [Roadmap](docs/ROADMAP.md) and [Security](SECURITY.md) so proposals match the current **public v0.3 source** feature boundary.
 
 ## Local development
 
@@ -20,7 +20,7 @@ python -m compileall -q src
 python -m pytest -q
 ```
 
-GitHub Actions CI runs Python **3.12 and 3.13**, compiles package sources and executes the test suite.
+Tests run **locally** (Python 3.12 or 3.13) or in a separate explicitly selected verification environment. The project does not use GitHub Actions. Before publishing a release, record the exact commands and actual results from an independent test run.
 
 ## Code design rules
 
@@ -34,7 +34,7 @@ GitHub Actions CI runs Python **3.12 and 3.13**, compiles package sources and ex
 
 ## Reporting problems
 
-When filing an issue, include a clear expected/actual behavior, tool name, public v0.1 version, Python version, client/transport, and **redacted** logs. Use sample article IDs such as `example_001` and invented URLs. If you suspect a security bug, see [SECURITY.md](SECURITY.md) for private reporting; do not post exploit payloads containing credentials.
+When filing an issue, include a clear expected/actual behavior, tool name, public package version, Python version, client/transport, and **redacted** logs. Use sample article IDs such as `example_001` and invented URLs. If you suspect a security bug, see [SECURITY.md](SECURITY.md) for private reporting; do not post exploit payloads containing credentials.
 
 ## Pull requests
 
