@@ -49,6 +49,12 @@ python -m pip install -e ".[poster]"
 
 The poster engine uses Pandoc, XeLaTeX and a suitable installed font. The [poster guide](docs/POSTERS.md) covers Windows and Linux setup.
 
+You can also run poster export without an MCP client:
+
+~~~bash
+chat-manuscript-poster --source manuscripts/v1/originals/my-article.md --output posters/my-article
+~~~
+
 ### Example
 
 Ask your connected MCP client:
