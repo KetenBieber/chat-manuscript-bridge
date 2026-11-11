@@ -5,7 +5,7 @@ summarizes source Markdown, and never publishes it to Feishu.
 """
 from __future__ import annotations
 
-from contextlib import TemporaryDirectory
+from tempfile import TemporaryDirectory
 from io import BytesIO
 import hashlib
 import ipaddress
