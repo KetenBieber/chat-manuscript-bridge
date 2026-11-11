@@ -1,0 +1,31 @@
+name: Feature request
+description: Propose a new source-safe MCP capability or developer experience improvement.
+title: "feature: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please read the public v0.1 [Roadmap](../../docs/ROADMAP.md).
+        Proposals should preserve immutable originals and avoid unverified publication claims.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or user workflow
+      placeholder: "When I publish an article through a stdio client..."
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Mention inputs, returned evidence and required user consent.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Safety and test considerations
+      description: Include duplicate-upload, source hashes, credentials and regression tests.
+    validations:
+      required: false

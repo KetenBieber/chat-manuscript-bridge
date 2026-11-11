@@ -1,0 +1,55 @@
+name: Bug report
+description: Report a reproducible defect using synthetic data only.
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping improve source-faithful MCP handoff.
+        **Do not include private manuscripts, real tokens, Feishu Open IDs, destination IDs, or production logs.**
+  - type: input
+    id: tool
+    attributes:
+      label: MCP tool / component
+      placeholder: "submit_manuscript / approve_publication / HTTP auth / docs"
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction steps (synthetic only)
+      description: Include an invented article ID and synthetic sample content.
+      placeholder: |
+        1. Start with BRIDGE_TRANSPORT=stdio
+        2. Call submit_manuscript with article_id=example_001
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior and redacted error
+      description: Never paste authentication headers, real paper text, or private URL tokens.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: "Python 3.13, Windows 11, stdio MCP, v0.1.0"
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy checklist
+      options:
+        - label: I have removed all private data, credentials, identifiers and real document contents.
+          required: true
