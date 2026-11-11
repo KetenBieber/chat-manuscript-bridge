@@ -7,6 +7,8 @@ from __future__ import annotations
 
 import hmac
 import os
+import shutil
+from importlib.util import find_spec
 
 from mcp.server.fastmcp import FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
@@ -52,7 +54,7 @@ def inspect_configuration() -> dict:
     """
     return {
         "service": "chat-manuscript-bridge",
-        "version": "0.1.0",
+        "version": "0.2.0",
         "github_configured": bool(os.getenv("BRIDGE_GITHUB_REPO") and os.getenv("BRIDGE_GITHUB_TOKEN")),
         "allowed_destinations_count": len(tuple(filter(
             None, (x.strip() for x in os.getenv("BRIDGE_ALLOWED_DESTINATIONS", "").split(","))
@@ -66,6 +68,8 @@ def inspect_configuration() -> dict:
             "feishu_import_worker_included": False,
             "oauth_21_authorization_server_included": False,
             "github_document_poster_export": True,
+            "poster_runtime_ready": bool(shutil.which("pandoc") and shutil.which("xelatex") and
+                                         find_spec("fitz") and find_spec("PIL")),
         },
         "usage": {
             "first_write_tool": "submit_manuscript",
