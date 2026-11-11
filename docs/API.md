@@ -11,6 +11,7 @@ The endpoint is /mcp over authenticated Streamable HTTP, or the local stdio tran
 | get_publication_status | article_id | Current source-bound state and any real receipts |
 | reconcile_publication | article_id | Read-only recovery instructions; safe_to_repeat_upload=false |
 | list_manuscripts | limit from 1 to 200 | Private repository article IDs |
+| inspect_legacy_article | article_id (requires BRIDGE_LEGACY_PREFIX) | Read-only validation of old Git Blob SHA and source-bound Feishu receipt/layout state; no mutation |
 
 ## Status guarantees
 
