@@ -43,7 +43,7 @@ Platform-specific connection recipes, sample MCP prompts/resources, developer di
 
 ### 4. Interoperability & release quality (planned)
 
-Test matrices for Python 3.12/3.13, stdio/HTTP clients, typed tool inputs, private GitHub rate limits, authenticated remote hosting, idempotent retries, and a staging Feishu workspace. Publish a tagged release only when tests and documentation describe the same capabilities.
+Use local or dedicated-environment test matrices for Python 3.12/3.13, stdio/HTTP clients, typed tool inputs, private GitHub rate limits, authenticated remote hosting, idempotent retries, and a staging Feishu workspace. Do not use GitHub Actions. Publish a tagged release after recording independently run tests and ensuring the documentation describes the implemented capabilities.
 
 ## Definition of done for the Feishu provider
 
