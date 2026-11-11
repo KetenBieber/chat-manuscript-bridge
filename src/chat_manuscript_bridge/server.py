@@ -81,6 +81,9 @@ def publish_this_chat(article_id: str, markdown: str, category: str,
         return {"article_id": article_id, "requires_confirmation": True,
                 "category": category, "destination": destination}
     svc = service()
+    # Validate authorization target before creating any private persistent record.
+    if destination not in svc.allowed_destinations:
+        raise BridgeError("Destination is not in the server's allowed destination list")
     source = svc.submit(article_id, markdown, category, image_sources)
     approval = svc.approve(article_id, destination, confirm=True)
     return {"article_id": article_id, "source": source,
@@ -115,9 +118,11 @@ class BearerAuth:
         self.downstream, self.secret = downstream, secret
 
     async def __call__(self, scope, receive, send):
-        if scope["type"] != "http":
+        if scope["type"] == "lifespan":
             await self.downstream(scope, receive, send)
             return
+        if scope["type"] != "http":
+            raise BridgeError("Only authenticated HTTP MCP transport is supported")
         supplied = dict(scope.get("headers", [])).get(b"authorization", b"").decode("latin-1")
         if not hmac.compare_digest(supplied, "Bearer " + self.secret):
             payload = b"Unauthorized"
