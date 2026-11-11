@@ -107,6 +107,8 @@ python -m chat_manuscript_bridge
 
 当前公开版本会返回真实的文章指纹、逐篇授权和交付作业状态。**未接入外部 Worker 时不会上传飞书**。完整示例：[查看一次从保存到查询的调用过程](docs/EXAMPLES.md)。
 
+通过 MCP Prompt 还提供两份可选操作指引：`manuscript_handoff_checklist`（保存与授权）和 `publication_reconciliation_checklist`（遇到不确定上传时的防重复恢复）。这些指引不会代写文章或触发发布。
+
 ## 设计原则
 
 **原稿保真。** 不重写、不摘要、不做空格或 Markdown 正规化；再次提交同一 ID 时，正文不同就拒绝覆盖。
