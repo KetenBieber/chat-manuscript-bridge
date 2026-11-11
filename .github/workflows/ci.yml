@@ -14,14 +14,17 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.12", "3.13"]
+    env:
+      # Tests do not start the production HTTP bearer-authenticated server.
+      BRIDGE_TRANSPORT: stdio
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
       - name: Install package and test dependencies
         run: python -m pip install -e ".[test]"
-      - name: Compile all package source files
+      - name: Compile package source
         run: python -m compileall -q src
-      - name: Run unit tests
+      - name: Unit tests
         run: python -m pytest -q
