@@ -4,7 +4,7 @@ This is a public general-purpose **MCP source handoff layer**, developed separat
 
 ## Capability matrix
 
-| Capability | Public v0.1.0 | Next acceptance requirement |
+| Capability | Public v0.3.0 | Next acceptance requirement |
 | --- | --- | --- |
 | Local stdio MCP | **Implemented** | End-to-end test in supported clients |
 | Streamable HTTP + static Bearer gate | **Implemented** | TLS / proxy deployment and auth review |
@@ -14,7 +14,7 @@ This is a public general-purpose **MCP source handoff layer**, developed separat
 | Source-bound status + read-only reconciliation | **Implemented** | Independent remote receipt attestation |
 | Optional read-only private legacy inspection | **Implemented** | Migration plan with no overwrites |
 | Real Feishu DOCX import, native math, images and layout repair | **Not shipped** | Dedicated provider + tests against actual documents |
-| Real Feishu message notification | **Not shipped** | Message-ID receipt after full online audit |
+| Feishu IM notification after external verified layout | **Implemented (optional adapter)** | Sandbox integration tests; message-ID receipt is source-bound |
 | OAuth 2.1 for direct ChatGPT custom MCP registration | **Not shipped** | Compliant IdP, PKCE, token lifecycle and scope checks |
 | Public multi-tenant hosting | **Not shipped** | Tenant isolation, abuse controls, quotas, audit logging |
 | Interactive web dashboard / MCP App UI | **Not shipped** | Real data-bound app, accessibility, security and browser tests |
@@ -33,7 +33,7 @@ Create a provider abstraction for destinations (starting with Feishu) and binary
 2. Worker attempt and at-most-once remote import claim.
 3. Remote API receipt for the same source fingerprint.
 4. Same-document layout verification of headings, prose, links, images, tables and equations.
-5. IM notification after full layout verification, with an independent message-ID receipt.
+5. IM notification after full layout verification, with an independent message-ID receipt (optional adapter implemented; worker integration remains external).
 
 Retain existing private production IDs/claims unchanged during migration; no history rewrite or duplicate import.
 
