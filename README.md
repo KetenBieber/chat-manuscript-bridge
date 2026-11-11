@@ -1,77 +1,152 @@
+<div align="center">
+
 # Chat Manuscript Bridge
 
-**Preserve the original. Deliver with evidence.**
+**Write once. Preserve the source. Publish with proof.**
 
-A self-hosted Model Context Protocol (MCP) server for handing off finished manuscripts from AI conversations without rewriting the article. Each original is stored byte-for-byte with source SHA256 and Git Blob SHA, explicit per-article authorization and a durable, inspectable job status.
+A self-hosted **Model Context Protocol (MCP)** server that turns finished AI-assisted manuscripts into **immutable, source-verified delivery jobs**—without asking another model to rewrite the work.
 
-**Current stage: v0.1 development.** This public repository implements direct authenticated MCP handoff, immutable GitHub storage, approval and status/recovery logic. It **does not yet ship the Feishu DOCX import/layout/notification worker**. An approved request is not a published document. The pre-existing private Railway worker has not been migrated or modified.
+[![CI](https://github.com/KetenBieber/chat-manuscript-bridge/actions/workflows/ci.yml/badge.svg)](https://github.com/KetenBieber/chat-manuscript-bridge/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&logoColor=white)](pyproject.toml)
+[![MCP](https://img.shields.io/badge/MCP-stdio%20%7C%20Streamable%20HTTP-6854c5)](docs/CLIENT_SETUP.md)
+[![License](https://img.shields.io/badge/License-MIT-2f855a)](LICENSE)
+[![Release stage](https://img.shields.io/badge/Stage-v0.1%20foundation-64748b)](docs/ROADMAP.md)
 
-[中文说明](README.zh-CN.md) | [Architecture](docs/ARCHITECTURE.md) | [API](docs/API.md) | [Security](SECURITY.md)
+**[Get started](docs/QUICKSTART.md)** · **[Tools](docs/TOOL_CATALOG.md)** · **[Examples](docs/EXAMPLES.md)** · **[Architecture](docs/ARCHITECTURE.md)** · **[简体中文](README.zh-CN.md)**
 
-## Capabilities
+</div>
 
-| Area | Status |
-| --- | --- |
-| MCP Streamable HTTP / local stdio tools | Implemented |
-| Private GitHub immutable UTF-8 original + hash verification | Implemented |
-| Figure source URL mapping, stored with original source record | Implemented |
-| Explicit single-article approval, destination allowlist | Implemented |
-| Durable statuses, safe inspection of ambiguous upload | Implemented |
-| Feishu upload, native equations and layout recovery worker | Next integration |
-| Real Feishu IM notification and production data migration | Not yet integrated |
+---
 
-The software source is public; your manuscript repository stays private. The bridge is not an LLM writer and does not alter the content.
+## Why this exists
 
-## Install
+Long-form research, technical writing, and working documents are often created over many turns of conversation. Moving the **finished version** to a knowledge base should not require an agent to regenerate, paraphrase, or silently shorten it. It should also be possible to answer: *Which exact version was approved? Did a destination really receive it? Can an uncertain upload be retried safely?*
 
-Requires Python 3.12+:
+**Chat Manuscript Bridge separates authorship from delivery.** It keeps the original in your own private GitHub repository, binds each handoff to the content's SHA256 and Git Blob SHA, and exposes clear MCP tools to approve, inspect, and reconcile publication work.
 
-~~~bash
+> [!IMPORTANT]
+> **Public v0.1 is a trustworthy handoff layer, not a complete Feishu publisher.** The public package implements MCP, GitHub storage, approvals, and verifiable status inspection. **Feishu DOCX import, native equation layout, and IM notification are not shipped in this repository yet.** Those capabilities exist in a separate private production integration and are **not** claimed as features of the public release. An approved job does not imply a published document.
+
+## At a glance
+
+| You want to… | Use | What you actually get |
+| --- | --- | --- |
+| Preserve a complete manuscript | \`submit_manuscript\` | Immutable GitHub original, SHA256 + Git Blob SHA |
+| Authorize one specific delivery | \`approve_publication\` | Explicit consent tied to the article's immutable source |
+| Save + approve from a conversation | \`publish_this_chat\` | A durable, approved **job**, not a fabricated destination URL |
+| Know what happened | \`get_publication_status\` | Source-bound status and only real, matching delivery receipts |
+| Investigate an uncertain upload | \`reconcile_publication\` | Read-only recovery instructions; no blind duplicate upload |
+| Explore earlier items | \`list_manuscripts\` | IDs in your private data store |
+| Check setup | \`inspect_configuration\` | Non-secret readiness and integration stage |
+| Inspect old private records | \`inspect_legacy_article\` | Optional, strictly read-only legacy source/receipt audit |
+
+### The workflow
+
+\`\`\`mermaid
+flowchart LR
+    A["Conversation / human author<br/>Final manuscript"] --> B["MCP handoff<br/>Submit · Approve"]
+    B --> C[("Your PRIVATE GitHub repo<br/>Immutable text + fingerprints")]
+    C --> D["Delivery worker<br/>External integration"]
+    D --> E["Destination API<br/>Only real receipts"]
+    E --> F["Layout audit + notification<br/>Worker-dependent"]
+    C --> G["Status & recovery<br/>Read-only MCP tools"]
+    E --> G
+    F --> G
+    classDef input fill:#e9f4ff,stroke:#2563eb,color:#132744
+    classDef secure fill:#f3f4ff,stroke:#635bce,color:#272153
+    classDef future fill:#fff4df,stroke:#cc8e27,color:#513709
+    class A,B input
+    class C,G secure
+    class D,E,F future
+\`\`\`
+
+*In v0.1, the external delivery worker and destination-side features are an **integration boundary**, not included runtime components.*
+
+## Quick start
+
+**Requirements:** Python 3.12+, a private GitHub repository for data, and a fine-grained GitHub token scoped to that repository.
+
+\`\`\`bash
+git clone https://github.com/KetenBieber/chat-manuscript-bridge.git
+cd chat-manuscript-bridge
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install -e ".[test]"
 python -m pytest -q
-~~~
+\`\`\`
 
-Set the environment variables from [.env.example](.env.example). The process does not auto-load .env: export them using your shell or your hosting platform's secret manager.
+Configure these **in your shell or secret manager**, using [.env.example](.env.example) as the reference:
 
-~~~text
-BRIDGE_GITHUB_REPO=your-account/your-private-data-repo
-BRIDGE_GITHUB_TOKEN=your-fine-grained-token
+\`\`\`dotenv
+BRIDGE_GITHUB_REPO=you/private-manuscripts
+BRIDGE_GITHUB_TOKEN=<fine-grained-token>
 BRIDGE_GITHUB_BRANCH=main
 BRIDGE_STORAGE_PREFIX=manuscripts/v1
 BRIDGE_ALLOWED_DESTINATIONS=personal-knowledge-base
-~~~
+BRIDGE_TRANSPORT=stdio
+\`\`\`
 
-The token needs access only to the private data repository. A missing destination allowlist **denies all publication approvals**.
+Start a **local stdio MCP server**:
 
-### Local stdio
-
-~~~bash
+\`\`\`bash
 python -m chat_manuscript_bridge
-~~~
+\`\`\`
 
-### Authenticated HTTP
+To connect an MCP-capable client, configure its stdio command and the required environment variables. **The server speaks MCP over stdin/stdout; it is not a regular interactive CLI.** Copyable client configurations for stdio and authenticated HTTP are in **[Client setup](docs/CLIENT_SETUP.md)**; Windows instructions are in **[Quick start](docs/QUICKSTART.md)**.
 
-~~~bash
-export BRIDGE_TRANSPORT=http
-export BRIDGE_ALLOWED_HOST=localhost
-export BRIDGE_MCP_TOKEN="$(python -c 'import secrets; print(secrets.token_urlsafe(32))')"
-uvicorn chat_manuscript_bridge.server:app --host 127.0.0.1 --port 8000
-~~~
+### Example: publish intent from chat
 
-MCP endpoint: **/mcp**. For an external deployment provide TLS at the ingress, configure the exact host and never expose an unauthenticated HTTP service. The included Dockerfile supports container-based deployment.
+A compatible client can call:
 
-## ChatGPT usage
+\`\`\`json
+{
+  "tool": "publish_this_chat",
+  "arguments": {
+    "article_id": "example_robotics_paper_001",
+    "markdown": "# Example\n\nA finished, author-approved manuscript.",
+    "category": "robotics",
+    "destination": "personal-knowledge-base",
+    "confirm": true
+  }
+}
+\`\`\`
 
-Deploy the service first, then explicitly connect its real MCP endpoint in a compatible ChatGPT client. **Creating a GitHub repository or installing a skill does not automatically expose these MCP tools in ChatGPT.**
+The server stores the exact Markdown in **your private repository** and returns the source's actual SHA values and an approved delivery **job**. It does **not** start a Feishu upload in public v0.1. More response examples and failure cases: **[Examples](docs/EXAMPLES.md)**.
 
-The publish_this_chat tool accepts the final manuscript *actually available in the same conversation*, article_id, category, logical destination and confirm=true after the user has authorized that one article. It saves the original and its approval in GitHub; the returned result is a **source-bound job**, not a Feishu success claim.
+## What makes this different
 
-Use get_publication_status to inspect verified status; reconcile_publication makes no writes and never blindly repeats an uncertain upload. Optional inspect_legacy_article reads older records **without writing to or republishing from** the old private store; configure BRIDGE_LEGACY_PREFIX explicitly before using it.
+| Principle | Behavior |
+| --- | --- |
+| **The original is canonical** | No rewriting, trimming, Markdown normalization, or summarization; byte-for-byte storage and readback |
+| **Consent is explicit** | An allowlisted destination, an immutable source hash, and \`confirm=true\` for each article |
+| **Retry is not re-upload** | A pending or ambiguous external attempt blocks duplicate publication until reconciled |
+| **Every state has evidence** | \`saved\`, \`approved_for_delivery\`, \`published_api_verified\`, \`layout_verified\` are distinct |
+| **Your data stays yours** | Open-source code and real manuscripts live in different repositories; no real tokens or production receipts in this repo |
+| **Small, inspectable tools** | Eight purpose-built MCP tools with stable, source-bound responses |
 
-## Safety and extensibility
+## Documentation
 
-This code repository contains no user research, personal Feishu identifiers, passwords, real paper screenshots or production receipts. The source is deliberately separated from any private data repository. The future Feishu worker must preserve exact source hashes, audit each real document's math/figures/text and only send notifications after full layout verification.
+| Guide | Covers |
+| --- | --- |
+| **[Quick start](docs/QUICKSTART.md)** | Local setup, Python environments, private GitHub token and verification |
+| **[Client setup](docs/CLIENT_SETUP.md)** | Stdio, authenticated HTTP, sample configurations, ChatGPT compatibility |
+| **[Tool catalog](docs/TOOL_CATALOG.md)** | All 8 tools, inputs, effects, authorization and expected results |
+| **[Worked examples](docs/EXAMPLES.md)** | Full synthetic handoff, approval preview, state inspection, recovery |
+| **[Architecture](docs/ARCHITECTURE.md)** | Source hashes, private storage protocol and provider boundary |
+| **[API contract](docs/API.md)** | Record paths, limitations and exact status definitions |
+| **[Roadmap](docs/ROADMAP.md)** | What runs now vs. what remains before a general-purpose Feishu connector |
+| **[Security](SECURITY.md)** · **[Contributing](CONTRIBUTING.md)** | Threat model, safe deployment and contribution process |
 
-See [Architecture](docs/ARCHITECTURE.md) for the migration boundary and release stages. MIT licensed.
+## A note about ChatGPT connectivity
+
+A GitHub repository, an installed skill, and a connected MCP server are **three different things**. A client must expose and authenticate a real MCP connection before the tools above can be called. Public v0.1 supports stdio and a self-hosted HTTP endpoint protected by a static Bearer token; **some ChatGPT custom MCP connection flows require OAuth and cannot accept that static key directly**. Do not disable authentication to make a UI accept the endpoint. See [Client setup](docs/CLIENT_SETUP.md) and [direct-connection notes](docs/CHATGPT_DIRECT_CONNECTION.md).
+
+## Project status and contributing
+
+This repository is the **public, reusable foundation**. It is not yet a drop-in replacement for an existing private Feishu production pipeline. The remaining provider work must pass source-fidelity, duplicate-prevention, equation/figure layout, and message-delivery acceptance tests before any production migration.
+
+For an issue or enhancement, read [CONTRIBUTING.md](CONTRIBUTING.md). Please use **synthetic examples**—never upload your private manuscript, real Feishu Open ID, tokens, or production evidence.
+
+MIT licensed. See [LICENSE](LICENSE).
+
+<sub>Documentation patterns informed by the official MCP reference servers, GitHub MCP Server, Playwright MCP, and mature Agent Skills projects; see [project references](docs/PROJECT_REFERENCES.md).</sub>
