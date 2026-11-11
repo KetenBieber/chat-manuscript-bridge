@@ -68,7 +68,7 @@ Deploy the service first, then explicitly connect its real MCP endpoint in a com
 
 The publish_this_chat tool accepts the final manuscript *actually available in the same conversation*, article_id, category, logical destination and confirm=true after the user has authorized that one article. It saves the original and its approval in GitHub; the returned result is a **source-bound job**, not a Feishu success claim.
 
-Use get_publication_status to inspect verified status; reconcile_publication makes no writes and never blindly repeats an uncertain upload.
+Use get_publication_status to inspect verified status; reconcile_publication makes no writes and never blindly repeats an uncertain upload. Optional inspect_legacy_article reads older records **without writing to or republishing from** the old private store; configure BRIDGE_LEGACY_PREFIX explicitly before using it.
 
 ## Safety and extensibility
 
