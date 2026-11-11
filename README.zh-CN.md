@@ -4,7 +4,7 @@
 
 这是一个开源的 [MCP（Model Context Protocol）](https://modelcontextprotocol.io/)工具：把 ChatGPT 等客户端中完成的 Markdown 文章无损归档，交给受控的发布服务，生成 PDF / PNG 图片推文，并在飞书文档核验成功后发送消息提醒。
 
-[English](README.md) · [快速开始](docs/QUICKSTART.md) · [工具说明](docs/TOOL_CATALOG.md) · [飞书通知集成](docs/FEISHU_NOTIFICATIONS.md) · [调用示例](docs/EXAMPLES.md)
+[English](README.md) · [快速开始](docs/QUICKSTART.md) · [工具说明](docs/TOOL_CATALOG.md) · [飞书通知集成](docs/FEISHU_NOTIFICATIONS.md) · [调用示例](docs/EXAMPLES.md) · [版本记录](docs/RELEASE_NOTES.md)
 
 ## 为什么需要它？
 
@@ -79,3 +79,5 @@ python -m pip install -e ".[poster]"
 MIT License · 欢迎 Star、Issue 和 Pull Request。
 
 **关键词：**MCP、ChatGPT、Markdown 归档、飞书自动化、GitHub、科研笔记、PDF 图片推文、AI 写作工作流。
+
+Community validation and client compatibility feedback: [discussion issue #5](https://github.com/KetenBieber/chat-manuscript-bridge/issues/5).
