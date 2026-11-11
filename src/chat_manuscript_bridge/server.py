@@ -12,6 +12,7 @@ from mcp.server.fastmcp import FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
 
 from .models import BridgeError
+from .legacy import LegacyReader
 from .service import ManuscriptService
 from .storage import GitHubStorage
 
@@ -107,6 +108,18 @@ def reconcile_publication(article_id: str) -> dict:
 def list_manuscripts(limit: int = 50) -> dict:
     """List immutable manuscript IDs in the configured private GitHub repository."""
     return service().list_articles(limit)
+
+@mcp.tool()
+def inspect_legacy_article(article_id: str) -> dict:
+    """Read-only SHA/status audit of an older private manuscript store.
+
+    Requires the operator to configure BRIDGE_LEGACY_PREFIX; never modifies the
+    old repository or re-uploads existing Feishu documents.
+    """
+    prefix = os.getenv("BRIDGE_LEGACY_PREFIX")
+    if not prefix:
+        raise BridgeError("BRIDGE_LEGACY_PREFIX is not configured")
+    return LegacyReader(service().storage, prefix).inspect(article_id)
 
 
 class BearerAuth:
