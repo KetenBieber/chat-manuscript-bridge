@@ -46,7 +46,7 @@ MCP 工具名称：**generate_document_poster**。
 
 ## 图片与排版
 
-- 支持普通 Markdown 图片，例如：![图注](images/diagram.png)。
+- 支持普通 Markdown 图片语法，例如：`![图注](images/diagram.png)`。
 - 相对图片路径从原 Markdown 所在目录解析，图片从同一 GitHub 仓库读取。
 - 作者网站的 HTTPS 图片可通过 BRIDGE_POSTER_IMAGE_HOSTS 逐个允许；默认不会抓取任意外部网站。
 - 支持 PNG、JPEG 和 WebP。图片找不到、过大或损坏时会明确报错，不会静默删图。
